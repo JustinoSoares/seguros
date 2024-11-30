@@ -1,0 +1,109 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id            String          @id @default(uuid())
+  nome_completo String
+  email         String          @unique
+  telefone      String
+  senha         String
+  dataCriacao   DateTime        @default(now())
+  emergencias   Emergencia[]
+  historicoQuiz HistoricoQuiz[]
+  ativo         Boolean         @default(true)
+}
+
+model Parceiro {
+  id            String       @id @default(uuid())
+  nome_completo String
+  tipoServico   TipoServico
+  telefone      String
+  localizacao   Float[]
+  ativo         Boolean      @default(true)
+  emergencias   Emergencia[]
+}
+
+model Emergencia {
+  id            String       @id @default(uuid())
+  usuarioId     String
+  usuario       Usuario      @relation(fields: [usuarioId], references: [id])
+  tipoProblema  TipoProblema
+  localizacao   Float[]
+  status        Status       @default(ABERTO)
+  parceiroId    String?
+  parceiro      Parceiro?    @relation(fields: [parceiroId], references: [id])
+  dataCriacao   DateTime     @default(now())
+  dataConclusao DateTime?
+  avaliacoes    Avaliacao[]
+}
+
+model Avaliacao {
+  id           String     @id @default(uuid())
+  emergenciaId String
+  emergencia   Emergencia @relation(fields: [emergenciaId], references: [id])
+  nota         Int
+  comentario   String?
+  dataCriacao  DateTime   @default(now())
+}
+
+model QuizPergunta {
+  id            String          @id @default(uuid())
+  pergunta      String
+  respostas     QuizResposta[]
+  dataCriacao   DateTime        @default(now())
+  HistoricoQuiz HistoricoQuiz[]
+}
+
+model QuizResposta {
+  id            String          @id @default(uuid())
+  perguntaId    String
+  pergunta      QuizPergunta    @relation(fields: [perguntaId], references: [id])
+  resposta      String
+  correta       Boolean         @default(false)
+  HistoricoQuiz HistoricoQuiz[]
+}
+
+model HistoricoQuiz {
+  id           String       @id @default(uuid())
+  usuarioId    String
+  usuario      Usuario      @relation(fields: [usuarioId], references: [id])
+  perguntaId   String
+  pergunta     QuizPergunta @relation(fields: [perguntaId], references: [id])
+  respostaId   String
+  resposta     QuizResposta @relation(fields: [respostaId], references: [id])
+  dataResposta DateTime     @default(now())
+}
+
+// Enums
+enum TipoServico {
+  REBOQUE
+  TRANSPORTE
+  BOMBEIROS
+  AMBULANCIA
+}
+
+enum TipoProblema {
+  REBOQUE
+  TRANSPORTE
+  BOMBEIROS
+  AMBULANCIA
+}
+
+enum Status {
+  ABERTO
+  EM_ANDAMENTO
+  CONCLUIDO
+}
