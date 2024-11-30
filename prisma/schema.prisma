@@ -20,6 +20,9 @@ model Usuario {
   email         String          @unique
   telefone      String
   senha         String
+  bi            String
+  email_verify  String?
+  rules         Rules           @default(NORMAL)
   dataCriacao   DateTime        @default(now())
   emergencias   Emergencia[]
   historicoQuiz HistoricoQuiz[]
@@ -27,13 +30,16 @@ model Usuario {
 }
 
 model Parceiro {
-  id            String       @id @default(uuid())
-  nome_completo String
-  tipoServico   TipoServico
-  telefone      String
-  localizacao   Float[]
-  ativo         Boolean      @default(true)
-  emergencias   Emergencia[]
+  id          String       @id @default(uuid())
+  nome        String
+  tipoServico TipoServico
+  telefone    String       @unique
+  email       String       @unique
+  longitude   Float
+  latitude    Float
+  address     String?
+  ativo       Boolean      @default(true)
+  emergencias Emergencia[]
 }
 
 model Emergencia {
@@ -41,7 +47,9 @@ model Emergencia {
   usuarioId     String
   usuario       Usuario      @relation(fields: [usuarioId], references: [id])
   tipoProblema  TipoProblema
-  localizacao   Float[]
+  longitude     Float
+  latitude      Float
+  address       String?
   status        Status       @default(ABERTO)
   parceiroId    String?
   parceiro      Parceiro?    @relation(fields: [parceiroId], references: [id])
@@ -87,6 +95,10 @@ model HistoricoQuiz {
   dataResposta DateTime     @default(now())
 }
 
+enum Rules {
+  NORMAL
+  ADMIN
+}
 // Enums
 enum TipoServico {
   REBOQUE

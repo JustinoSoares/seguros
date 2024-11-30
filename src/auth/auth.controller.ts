@@ -5,8 +5,13 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
+  @Post('verify')
+  async verify(@Body('email') email: string) {
+    return this.authService.validateUser(email);
+  }
+
   @Post('login')
-  async login(@Body('email') email: string, @Body('password') password: string) {
-    return this.authService.login(email, password);
+  async login(@Body('email_verify') email_verify: string) {
+    return this.authService.login(email_verify);
   }
 }

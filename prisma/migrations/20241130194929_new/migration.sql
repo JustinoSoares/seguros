@@ -1,4 +1,7 @@
 -- CreateEnum
+CREATE TYPE "Rules" AS ENUM ('NORMAL', 'ADMIN');
+
+-- CreateEnum
 CREATE TYPE "TipoServico" AS ENUM ('REBOQUE', 'TRANSPORTE', 'BOMBEIROS', 'AMBULANCIA');
 
 -- CreateEnum
@@ -10,12 +13,15 @@ CREATE TYPE "Status" AS ENUM ('ABERTO', 'EM_ANDAMENTO', 'CONCLUIDO');
 -- CreateTable
 CREATE TABLE "Usuario" (
     "id" TEXT NOT NULL,
-    "nome" TEXT NOT NULL,
+    "nome_completo" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "telefone" TEXT,
+    "telefone" TEXT NOT NULL,
     "senha" TEXT NOT NULL,
-    "endereco" TEXT,
+    "bi" TEXT NOT NULL,
+    "email_verify" TEXT NOT NULL,
+    "rules" "Rules" NOT NULL,
     "dataCriacao" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "ativo" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "Usuario_pkey" PRIMARY KEY ("id")
 );
@@ -26,7 +32,10 @@ CREATE TABLE "Parceiro" (
     "nome" TEXT NOT NULL,
     "tipoServico" "TipoServico" NOT NULL,
     "telefone" TEXT NOT NULL,
-    "localizacao" DOUBLE PRECISION[],
+    "email" TEXT NOT NULL,
+    "longitude" DOUBLE PRECISION NOT NULL,
+    "latitude" DOUBLE PRECISION NOT NULL,
+    "address" TEXT,
     "ativo" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "Parceiro_pkey" PRIMARY KEY ("id")
@@ -37,7 +46,9 @@ CREATE TABLE "Emergencia" (
     "id" TEXT NOT NULL,
     "usuarioId" TEXT NOT NULL,
     "tipoProblema" "TipoProblema" NOT NULL,
-    "localizacao" DOUBLE PRECISION[],
+    "longitude" DOUBLE PRECISION NOT NULL,
+    "latitude" DOUBLE PRECISION NOT NULL,
+    "address" TEXT,
     "status" "Status" NOT NULL DEFAULT 'ABERTO',
     "parceiroId" TEXT,
     "dataCriacao" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -89,6 +100,12 @@ CREATE TABLE "HistoricoQuiz" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Usuario_email_key" ON "Usuario"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Parceiro_telefone_key" ON "Parceiro"("telefone");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Parceiro_email_key" ON "Parceiro"("email");
 
 -- AddForeignKey
 ALTER TABLE "Emergencia" ADD CONSTRAINT "Emergencia_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

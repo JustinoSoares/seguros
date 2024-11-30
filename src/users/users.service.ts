@@ -24,10 +24,10 @@ export class UsersService {
         const hashedPassword = await bcrypt.hash(userDTO.senha, 10);
 
         // Gerar o link de verificação
-        const verificationLink = `yame-api-git-main-justino-soares-projects.vercel.app/users/verify/${id}`;
+        //const verificationLink = `yame-api-git-main-justino-soares-projects.vercel.app/users/verify/${id}`;
 
         // Enviar o e-mail de verificação
-        await this.emailService.sendVerificationEmail(userDTO.email, verificationLink);
+        //await this.emailService.sendVerificationEmail(userDTO.email, verificationLink);
 
         return this.prisma.usuario.create({
             data: { ...userDTO, senha: hashedPassword, id },

@@ -7,12 +7,14 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { EmailModule } from 'src/email/email.module';
 
 @Module({
   imports: [
     forwardRef(() => UsersModule),
     PrismaModule,
     PassportModule,
+    EmailModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

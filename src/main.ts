@@ -11,6 +11,8 @@ let server: Server;
 }
 bootstrap();*/
 
+
+
 export const handler: Handler = async (req, res) => {
   if (!server) {
     const app = await NestFactory.create(AppModule);
@@ -19,4 +21,3 @@ export const handler: Handler = async (req, res) => {
   }
   server(req, res);
 };
-

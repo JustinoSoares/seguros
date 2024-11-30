@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Usuario" ALTER COLUMN "email_verify" DROP NOT NULL,
+ALTER COLUMN "rules" SET DEFAULT 'NORMAL';
