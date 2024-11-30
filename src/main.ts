@@ -1,7 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ExpressAdapter } from '@nestjs/platform-express';
-import * as express from 'express';
+import { Handler } from 'express';
+import { Server } from 'http';
+
+let server: Server;
 
 /*async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -9,13 +11,12 @@ import * as express from 'express';
 }
 bootstrap();*/
 
-const expressApp = express();
-
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
-  await app.init();
-}
-bootstrap();
-
-export const handler = expressApp;
+export const handler: Handler = async (req, res) => {
+  if (!server) {
+    const app = await NestFactory.create(AppModule);
+    await app.init();
+    server = app.getHttpAdapter().getInstance();
+  }
+  server(req, res);
+};
 
