@@ -1,23 +1,21 @@
+// api/hello.ts
+import { Handler } from '@nestjs/platform-express';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-//import { Handler } from 'express';
-//import { Server } from 'http';
+import { AppModule } from '../src/app.module';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import * as express from 'express';
 
-//let server: Server;
+const server = express();
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
+  
+  // Habilitando CORS (se necessário)
+  app.enableCors();
+
+  await app.init();
 }
+
 bootstrap();
 
-
-/*export const handler: Handler = async (req, res) => {
-  if (!server) {
-    const app = await NestFactory.create(AppModule);
-    await app.init();
-    server = app.getHttpAdapter().getInstance();
-  }
-  server(req, res);
-};*/
-
+export const handler: Handler = server;
